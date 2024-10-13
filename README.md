@@ -31,7 +31,7 @@ Utils = Новый ("Addin.MedIgor.Utils");
 Envs = Utils.Envs();
 
 Сообщить(СтрШаблон("Pid: %1", Utils.Pid()));
-Сообщить(СтрШаблон("APPDATA: %1", Utils.ENV("APPDATA")));
+Сообщить(СтрШаблон("APPDATA: %1", Utils.Env("APPDATA")));
 Сообщить(СтрШаблон("CurrentDir: %1", Utils.CurrentDir()));
 Сообщить(СтрШаблон("CurrentExe: %1", Utils.CurrentExe()));
 
