@@ -1,13 +1,24 @@
-use std::{io::Write, os::windows::ffi::OsStrExt, thread, time::Duration};
+use std::{error::Error, io::Write, os::windows::ffi::OsStrExt, thread, time::Duration};
 
-use addin1c::{name, AddinResult, MethodInfo, SimpleAddin, Variant};
+use addin1c::{name, AddinResult, MethodInfo, PropInfo, SimpleAddin, Variant};
 use smallvec::SmallVec;
 
-pub struct Addin {}
+pub struct Addin {
+    last_error: Option<Box<dyn Error>>,
+}
 
 impl Addin {
     pub fn new() -> Addin {
-        Addin {}
+        Addin { last_error: None }
+    }
+
+    fn last_error(&mut self, value: &mut Variant) -> AddinResult {
+        match &self.last_error {
+            Some(err) => value
+                .set_str1c(err.to_string().as_str())
+                .map_err(|e| e.into()),
+            None => value.set_str1c("").map_err(|e| e.into()),
+        }
     }
 
     fn pid(&mut self, ret_value: &mut Variant) -> AddinResult {
@@ -77,8 +88,8 @@ impl SimpleAddin for Addin {
         name!("Utils")
     }
 
-    fn get_info() -> u16 {
-        1000
+    fn save_error(&mut self, err: Option<Box<dyn Error>>) {
+        self.last_error = err;
     }
 
     fn methods() -> &'static [MethodInfo<Self>]
@@ -119,5 +130,13 @@ impl SimpleAddin for Addin {
                 method: addin1c::Methods::Method1(Self::sleep),
             },
         ]
+    }
+
+    fn properties() -> &'static [PropInfo<Self>] {
+        &[PropInfo {
+            name: name!("LastError"),
+            getter: Some(Self::last_error),
+            setter: None,
+        }]
     }
 }

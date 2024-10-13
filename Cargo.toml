@@ -13,6 +13,5 @@ panic = "abort"   # Abort on panic
 strip = true      # Automatically strip symbols from the binary.
 
 [dependencies]
-addin1c = "0.3"
-smallvec = "1.11"
-
+addin1c = "0.4"
+smallvec = "1.13"
